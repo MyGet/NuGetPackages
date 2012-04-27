@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>NuSpec</id>
+    <version>1.0.0</version>
+    <authors>Xavier Decoster</authors>
+    <owners>Xavier Decoster</owners>
+    <licenseUrl>https://github.com/xavierdecoster/NuGetPackages/blob/master/license.txt</licenseUrl>
+    <projectUrl>https://github.com/xavierdecoster/NuGetPackages</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Powershell cmdlet that makes working with NuSpec files easier!</description>
+  </metadata>
+</package>

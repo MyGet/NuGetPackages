@@ -70,24 +70,19 @@ function Get-MSBuildProperty {
 function Install-NuSpec {
     param(
         [parameter(ValueFromPipelineByPropertyName = $true)]
-        [string[]]$ProjectName
+        [string[]]$ProjectName,
+    	[switch]$EnablePackageBuild
     )
     
     Process {
     
-        if($ProjectName) {
-            $projects = Get-Project $ProjectName
-        }
-        else {
-            # All projects by default
-            $projects = Get-Project -All
-        }
+        $projects = (Resolve-ProjectName $ProjectName)
         
         if(!$projects) {
             Write-Error "Unable to locate project. Make sure it isn't unloaded."
             return
         }
-        
+		
         $solutionDir = Get-SolutionDir
         $solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
                     
@@ -146,15 +141,16 @@ function Install-NuSpec {
                 $project.ProjectItems.AddFromFile($projectNuspecPath) | Out-Null
                 $project.Save()
                 
-                # Add <BuildPackage>true</BuildPackage> for this project 
-                # (Set-MSBuildProperty also saves the project file)
-                $project.Name | Set-MSBuildProperty BuildPackage true
-                
                 "Updated '$($project.Name)' to use nuspec '$projectNuspec'"
             }
             catch {
                 Write-Warning "Failed to install nuspec '$projectNuspec' into '$($project.Name)'"
             }
+			
+			# Enable package build if switch is provided
+			if($EnablePackageBuild) {
+				Set-MSBuildProperty BuildPackage true $project.Name
+			}
         }
     }
 }

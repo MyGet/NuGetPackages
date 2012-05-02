@@ -37,6 +37,36 @@ function Get-MSBuildProject {
     }
 }
 
+function Set-MSBuildProperty {
+    param(
+        [parameter(Position = 0, Mandatory = $true)]
+        $PropertyName,
+        [parameter(Position = 1, Mandatory = $true)]
+        $PropertyValue,
+        [parameter(Position = 2, ValueFromPipelineByPropertyName = $true)]
+        [string[]]$ProjectName
+    )
+    Process {
+        (Resolve-ProjectName $ProjectName) | %{
+            $buildProject = $_ | Get-MSBuildProject
+            $buildProject.SetProperty($PropertyName, $PropertyValue) | Out-Null
+            $_.Save()
+        }
+    }
+}
+
+function Get-MSBuildProperty {
+    param(
+        [parameter(Position = 0, Mandatory = $true)]
+        $PropertyName,
+        [parameter(Position = 2, ValueFromPipelineByPropertyName = $true)]
+        [string]$ProjectName
+    )
+    
+    $buildProject = Get-MSBuildProject $ProjectName
+    $buildProject.GetProperty($PropertyName)
+}
+
 function Install-NuSpec {
     param(
         [parameter(ValueFromPipelineByPropertyName = $true)]

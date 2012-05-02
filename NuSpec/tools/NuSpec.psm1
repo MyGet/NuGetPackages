@@ -147,10 +147,10 @@ function Install-NuSpec {
                 Write-Warning "Failed to install nuspec '$projectNuspec' into '$($project.Name)'"
             }
 			
-			# Enable package build if switch is provided
-			if($EnablePackageBuild) {
-				Set-MSBuildProperty BuildPackage true $project.Name
-			}
+	    # Enable package build if switch is provided
+	    if($EnablePackageBuild) {
+	        Set-MSBuildProperty BuildPackage true $project.Name
+	    }
         }
     }
 }

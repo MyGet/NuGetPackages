@@ -109,7 +109,6 @@ function Install-NuSpec {
                     Copy-Item $xsdToolsPath $xsdInstallPath
                 }
                 
-                # TODO: check if solution item already exists
                 $alreadyAdded = $slnFolder.ProjectItems | Where-Object { $_.Name -eq $nuspecXsd }
                 if(!($alreadyAdded)) {
                     $solutionItemsProject.ProjectItems.AddFromFile($xsdInstallPath) | Out-Null
@@ -143,8 +142,13 @@ function Install-NuSpec {
             }
             
             try {
+                # Add nuspec file to the project
                 $project.ProjectItems.AddFromFile($projectNuspecPath) | Out-Null
                 $project.Save()
+                
+                # Add <BuildPackage>true</BuildPackage> for this project 
+                # (Set-MSBuildProperty also saves the project file)
+                $project.Name | Set-MSBuildProperty BuildPackage true
                 
                 "Updated '$($project.Name)' to use nuspec '$projectNuspec'"
             }

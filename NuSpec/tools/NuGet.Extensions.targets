@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="MsBuildExtensionPack\MSBuild.ExtensionPack.VersionNumber.targets" Condition="$(BuildPackage) == 'true'"/>
+  <Target Name="SetPackageVersion" Condition="$(BuildPackage) == 'true'">
+    <PropertyGroup>
+      <!-- Fetch the generated assembly version from the AssemblyInfo task (MSBuild Extension Pack, April 2012)-->
+      <PackageVersion>$(MaxAssemblyVersion)</PackageVersion>
+      <PushPkgSource>http://www.myget.org/F/mydemo/</PushPkgSource>
+      <SymbolsPkgSource>http://nuget.gw.symbolsource.org/MyGet/mydemo</SymbolsPkgSource>
+      <PushApiKey>816ac74f-bb7d-4dd7-b0c9-5f2c11bc435b</PushApiKey>
+
+      <!-- Property that enables pushing a package from a project -->
+      <PushPackage Condition="$(PushPackage) == ''">false</PushPackage>
+
+      <!-- Derive the package file name in case the package will be pushed and a nuspec is defined -->
+      <NuPkgFile Condition="$(PushPackage) == 'true' And $(NuSpecFile) != ''">$(PackageOutputDir)\$(NuSpecFile.Trim('nuspec'))$(PackageVersion).nupkg</NuPkgFile>
+      <SymbolsPkgFile Condition="$(PushPackage) == 'true' And $(NuPkgFile) != ''">$(NuPkgFile.Trim('nupkg')).Symbols.nupkg</SymbolsPkgFile>
+
+      <!-- If no NuSpec file defined in the project, fallback on the project itself-->
+      <NuSpecFile Condition="$(NuSpecFile) == ''">$(ProjectPath)</NuSpecFile>
+
+      <!-- Overwrite BuildCommand with generated package version, if any -->
+      <BuildCommand Condition="$(PackageVersion) != ''">"$(NuGetExePath)" pack "$(NuSpecFile)" -p Configuration=$(Configuration) -o "$(PackageOutputDir)" -symbols -version $(PackageVersion)</BuildCommand>
+
+      <!-- Added bonus: push command -->
+      <PushCommand>"$(NuGetExePath)" push "$(NuPkgFile)" -source "$(PushPkgSource)" -apikey $(PushApiKey)</PushCommand>
+      <PushSymbolsCommand>"$(NuGetExePath)" push "$(SymbolsPkgFile)" -source "$(SymbolsPkgSource)" -apikey $(PushApiKey)</PushSymbolsCommand>
+    </PropertyGroup>
+
+    <!-- Log the generated package version if any -->
+    <Message Text="Generated version '$(PackageVersion)'" Importance="high" />
+  </Target>
+</Project>

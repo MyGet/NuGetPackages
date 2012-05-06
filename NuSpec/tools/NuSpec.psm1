@@ -140,6 +140,8 @@ function Install-NuSpec {
                 # Add nuspec file to the project
                 $project.ProjectItems.AddFromFile($projectNuspecPath) | Out-Null
                 $project.Save()
+				
+				Set-MSBuildProperty NuSpecFile $projectNuspec $project.Name
                 
                 "Updated '$($project.Name)' to use nuspec '$projectNuspec'"
             }

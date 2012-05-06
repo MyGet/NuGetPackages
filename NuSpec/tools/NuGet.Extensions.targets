@@ -18,11 +18,8 @@
       <NuPkgFile Condition="$(PushPackage) == 'true' And $(NuSpecFile) != ''">$(PackageOutputDir)\$(NuSpecFile.Trim('nuspec'))$(PackageVersion).nupkg</NuPkgFile>
       <SymbolsPkgFile Condition="$(PushPackage) == 'true' And $(NuPkgFile) != ''">$(NuPkgFile.Trim('nupkg')).Symbols.nupkg</SymbolsPkgFile>
 
-      <!-- If no NuSpec file defined in the project, fallback on the project itself-->
-      <NuSpecFile Condition="$(NuSpecFile) == ''">$(ProjectPath)</NuSpecFile>
-
       <!-- Overwrite BuildCommand with generated package version, if any -->
-      <BuildCommand Condition="$(PackageVersion) != ''">"$(NuGetExePath)" pack "$(NuSpecFile)" -p Configuration=$(Configuration) -o "$(PackageOutputDir)" -symbols -version $(PackageVersion)</BuildCommand>
+      <BuildCommand Condition="$(PackageVersion) != ''">"$(NuGetExePath)" pack "$(ProjectPath)" -p Configuration=$(Configuration) -o "$(PackageOutputDir)" -symbols -version $(PackageVersion)</BuildCommand>
 
       <!-- Added bonus: push command -->
       <PushCommand>"$(NuGetExePath)" push "$(NuPkgFile)" -source "$(PushPkgSource)" -apikey $(PushApiKey)</PushCommand>

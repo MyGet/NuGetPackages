@@ -5,9 +5,9 @@
     <PropertyGroup>
       <!-- Fetch the generated assembly version from the AssemblyInfo task (MSBuild Extension Pack, April 2012)-->
       <PackageVersion>$(MaxAssemblyVersion)</PackageVersion>
-      <PushPkgSource>http://www.myget.org/F/mydemo/</PushPkgSource>
-      <SymbolsPkgSource>http://nuget.gw.symbolsource.org/MyGet/mydemo</SymbolsPkgSource>
-      <PushApiKey>816ac74f-bb7d-4dd7-b0c9-5f2c11bc435b</PushApiKey>
+      <PushPkgSource>http://www.myget.org/F/feedname/</PushPkgSource>
+      <SymbolsPkgSource>http://nuget.gw.symbolsource.org/MyGet/feedname</SymbolsPkgSource>
+      <PushApiKey>816bf74d-bb7d-4dd7-b0c9-5f2c11bc435b</PushApiKey>
 
       <!-- Property that enables pushing a package from a project -->
       <PushPackage Condition="$(PushPackage) == ''">false</PushPackage>

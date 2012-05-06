@@ -21,7 +21,9 @@ Use the <code>-EnablePackageBuild</code> swicth to automatically build the nuget
     Enable-PackagePush <ProjectName>
 
 Will install a <code>NuGet.Extensions.targets</code> MSBuild file and set the <code>&lt;PushPackage&gt;true&lt;/PushPackage&gt;</code> MSBuild property in the target project(s). 
-You can tweak **package versioning** in the <code>$(SolutionDir)\.nuget\MSBuildExtensionPack\MSBuild.ExtensionPack.VersionNumber.targets</code> file. *This is based on the MSBuild ExtensionPack SetVersionNumber target.*
+
+You can tweak **package versioning** in the <code>MSBuild.ExtensionPack.VersionNumber.targets</code> file, located under <code>$(SolutionDir)\.nuget\MSBuildExtensionPack</code>.
+*This is based on the MSBuild ExtensionPack SetVersionNumber target.*
 
 **Don't forget** to set the target feed URL for the packages and symbols, including the API key, in the <code>NuGet.Extensions.targets</code> file.
 

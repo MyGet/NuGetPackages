@@ -5,6 +5,7 @@
     <PropertyGroup>
       <!-- Fetch the generated assembly version from the AssemblyInfo task (MSBuild Extension Pack, April 2012)-->
       <PackageVersion>$(MaxAssemblyVersion)</PackageVersion>
+	  
 	  <!-- TODO: set API key and feedname or URL here -->
       <PushPkgSource>http://www.myget.org/F/feedname/</PushPkgSource>
       <SymbolsPkgSource>http://nuget.gw.symbolsource.org/MyGet/feedname</SymbolsPkgSource>

@@ -16,7 +16,7 @@
 
       <!-- Derive the package file name in case the package will be pushed and a nuspec is defined -->
       <NuPkgFile Condition="$(PushPackage) == 'true' And $(NuSpecFile) != ''">$(PackageOutputDir)\$(NuSpecFile.Trim('nuspec'))$(PackageVersion).nupkg</NuPkgFile>
-      <SymbolsPkgFile Condition="$(PushPackage) == 'true' And $(NuPkgFile) != ''">$(NuPkgFile.Trim('nupkg')).Symbols.nupkg</SymbolsPkgFile>
+      <SymbolsPkgFile Condition="$(PushPackage) == 'true' And $(NuSpecFile) != ''">$(PackageOutputDir)\$(NuSpecFile.Trim('nuspec'))$(PackageVersion).Symbols.nupkg</SymbolsPkgFile>
 
       <!-- Overwrite BuildCommand with generated package version, if any -->
       <BuildCommand Condition="$(PackageVersion) != ''">"$(NuGetExePath)" pack "$(ProjectPath)" -p Configuration=$(Configuration) -o "$(PackageOutputDir)" -symbols -version $(PackageVersion)</BuildCommand>

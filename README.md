@@ -22,4 +22,5 @@ Use the <code>-EnablePackageBuild</code> swicth to automatically build the nuget
 
 Will install a <code>NuGet.Extensions.targets</code> MSBuild file and set the <code>&lt;PushPackage&gt;true&lt;/PushPackage&gt;</code> MSBuild property in the target project(s). 
 You can tweak package versioning in the <code>$(SolutionDir)\.nuget\MSBuildExtensionPack\MSBuild.ExtensionPack.VersionNumber.targets</code> file. 
-In the <code>NuGet.Extensions.targets</code> file you can also tweak the target NuGet repository to indicate where the built NuGet package and symbols package need to be pushed.
+
+**Don't forget** to set the target feed URL for the packages and symbols, including the API key, in the <code>NuGet.Extensions.targets</code> file.

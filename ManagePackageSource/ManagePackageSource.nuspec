@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <version>0.0.2</version>
+    <authors>Maarten Balliauw</authors>
+    <owners>Maarten Balliauw</owners>
+    <id>ManagePackageSource</id>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Manage NuGet package sources from the NuGet PowerShell Console</description>
+  </metadata>
+  <files>
+    <file src="tools\init.ps1" target="tools\init.ps1" />
+    <file src="tools\ManagePackageSources.psd1" target="tools\ManagePackageSources.psd1" />
+    <file src="tools\ManagePackageSources.psm1" target="tools\ManagePackageSources.psm1" />
+  </files>
+</package>

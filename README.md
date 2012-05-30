@@ -1,6 +1,6 @@
 # NuGetPackages
 
-My collection of home-made NuGet packages :)
+Our collection of home-made NuGet packages :)
 
 ## NuSpec
 

@@ -36,7 +36,7 @@ function Add-PackageSource {
 	return $Name
 }
 
-function Delete-PackageSource {
+function Remove-PackageSource {
     param(
 		[parameter(Mandatory = $true)]
 		[string]$Name

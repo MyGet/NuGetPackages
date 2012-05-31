@@ -1,10 +1,10 @@
 @{
 
 # Script module or binary module file associated with this manifest
-ModuleToProcess = 'NuSpecTools.psm1'
+ModuleToProcess = 'NuSpec.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1'
+ModuleVersion = '2.0'
 
 # ID used to uniquely identify this module
 GUID = '6FA48925-78C1-43CB-9243-5FDB52F76434'

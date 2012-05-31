@@ -83,6 +83,10 @@ function Install-NuSpec {
             return
         }
 		
+		$profileDirectory = Split-Path $profile -parent
+		$profileModulesDirectory = (Join-Path $profileDirectory "Modules")
+		$moduleDir = (Join-Path $profileModulesDirectory "NuSpec")
+		
         $solutionDir = Get-SolutionDir
         $solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
                     
@@ -98,7 +102,7 @@ function Install-NuSpec {
             
             try {
                 $xsdInstallPath = Join-Path $solutionDir $nuspecXsd
-                $xsdToolsPath = Join-Path $global:nuspecToolsPath $nuspecXsd
+                $xsdToolsPath = Join-Path $moduleDir $nuspecXsd
                 
                 if(!(Test-Path $xsdInstallPath)) {
                     Copy-Item $xsdToolsPath $xsdInstallPath
@@ -126,7 +130,7 @@ function Install-NuSpec {
             $projectNuspecPath = Join-Path $projectDir $projectNuspec
             
             # Get the nuspec template source path
-            $nuspecTemplatePath = Join-Path $global:$nuspecToolsPath NuSpecTemplate.xml
+            $nuspecTemplatePath = Join-Path $moduleDir NuSpecTemplate.xml
             
             # Copy the templated nuspec to the project nuspec if it doesn't exist
             if(!(Test-Path $projectNuspecPath)) {
@@ -171,6 +175,9 @@ function Enable-PackagePush {
             return
         }
 		
+		$profileDirectory = Split-Path $profile -parent
+		$profileModulesDirectory = (Join-Path $profileDirectory "Modules")
+		$moduleDir = (Join-Path $profileModulesDirectory "NuSpec")
 		$solutionDir = Get-SolutionDir
 		$nugetFolder = Join-Path $solutionDir .nuget
 		
@@ -179,11 +186,11 @@ function Enable-PackagePush {
 		}
 		else {
 			# Copy NuGet.Extensions.targets to $(SolutionDir)\.nuget folder
-			$nugetExtensionsSrcPath = Join-Path $global:nuspecToolsPath NuGet.Extensions.targets
+			$nugetExtensionsSrcPath = Join-Path $moduleDir NuGet.Extensions.targets
 			Copy-Item $nugetExtensionsSrcPath $nugetFolder
 			
 			# Copy MSBuildExtensionPack to $(SolutionDir)\.nuget\MSBuildExtensionPack folder
-			$msbuildExtensionPackSrcPath = Join-Path $global:nuspecToolsPath MSBuildExtensionPack
+			$msbuildExtensionPackSrcPath = Join-Path $moduleDir MSBuildExtensionPack
 			$msbuildExtensionTargetPath = Join-Path $nugetFolder MSBuildExtensionPack
 			if(!(Test-Path $nugetFolder)) {
 				New-Item $msbuildExtensionTargetPath -type directory

@@ -9,6 +9,6 @@
     <projectUrl>https://github.com/myget/NuGetPackages</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Powershell cmdlet that makes working with NuSpec files easier!</description>
-    <releaseNotes>Added support for specifying a custom nuspec template.</releaseNotes>
+    <releaseNotes>Added support for specifying a custom nuspec template path when using the Install-NuSpec function.</releaseNotes>
   </metadata>
 </package>

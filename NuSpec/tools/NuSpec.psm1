@@ -71,7 +71,8 @@ function Install-NuSpec {
     param(
         [parameter(ValueFromPipelineByPropertyName = $true)]
         [string[]]$ProjectName,
-    	[switch]$EnablePackageBuild
+    	[switch]$EnablePackageBuild,
+        [string]$templatePath
     )
     
     Process {
@@ -130,7 +131,12 @@ function Install-NuSpec {
             $projectNuspecPath = Join-Path $projectDir $projectNuspec
             
             # Get the nuspec template source path
-            $nuspecTemplatePath = Join-Path $moduleDir NuSpecTemplate.xml
+            if($templatePath) {
+                $nuspecTemplatePath = $templatePath
+            }
+            else {
+                $nuspecTemplatePath = Join-Path $moduleDir NuSpecTemplate.xml
+            }
             
             # Copy the templated nuspec to the project nuspec if it doesn't exist
             if(!(Test-Path $projectNuspecPath)) {

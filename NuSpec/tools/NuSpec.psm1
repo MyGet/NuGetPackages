@@ -71,7 +71,7 @@ function Install-NuSpec {
     param(
         [parameter(ValueFromPipelineByPropertyName = $true)]
         [string[]]$ProjectName,
-    	[switch]$EnablePackageBuild,
+    	[switch]$EnableIntelliSense,
         [string]$TemplatePath
     )
     
@@ -88,37 +88,9 @@ function Install-NuSpec {
 		$profileModulesDirectory = (Join-Path $profileDirectory "Modules")
 		$moduleDir = (Join-Path $profileModulesDirectory "NuSpec")
 		
-        $solutionDir = Get-SolutionDir
-        $solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
-                    
-        # Set up solution folder "Solution Items"
-        $solutionItemsProject = $dte.Solution.Projects | Where-Object { $_.ProjectName -eq "Solution Items" }
-        if(!($solutionItemsProject)) {
-            $solutionItemsProject = $solution.AddSolutionFolder("Solution Items")
-        }        
-        
-        # Copy the XSD's in the solution directory
-        'nuspec.2010.7.xsd', 'nuspec.2011.8.xsd' | % {
-            $nuspecXsd = $_
-            
-            try {
-                $xsdInstallPath = Join-Path $solutionDir $nuspecXsd
-                $xsdToolsPath = Join-Path $moduleDir $nuspecXsd
-                
-                if(!(Test-Path $xsdInstallPath)) {
-                    Copy-Item $xsdToolsPath $xsdInstallPath
-                }
-                
-                $alreadyAdded = $solutionItemsProject.ProjectItems | Where-Object { $_.Name -eq $nuspecXsd }
-                if(!($alreadyAdded)) {
-                    $solutionItemsProject.ProjectItems.AddFromFile($xsdInstallPath) | Out-Null
-                }
-            }
-            catch {
-                Write-Warning "Failed to install nuspec XSD '$nuspecXsd' into 'Solution Items'"
-            }
+        if($EnableIntelliSense){
+            Enable-NuSpecIntelliSense            
         }
-        $solution.SaveAs($solution.FullName)
         
         # Add NuSpec file for project(s)
         $projects | %{ 
@@ -158,113 +130,51 @@ function Install-NuSpec {
             catch {
                 Write-Warning "Failed to install nuspec '$projectNuspec' into '$($project.Name)'"
             }
-			
-			# Enable package build if switch is provided
-			if($EnablePackageBuild) {
-				Set-MSBuildProperty BuildPackage true $project.Name
-			}
         }
     }
 }
 
-function Enable-PackagePush {
-	param(
-        [parameter(ValueFromPipelineByPropertyName = $true)]
-        [string[]]$ProjectName
-	)
-	
-	Process {
-		$projects = (Resolve-ProjectName $ProjectName)
-        
-        if(!$projects) {
-            Write-Error "Unable to locate project. Make sure it isn't unloaded."
-            return
-        }
-		
+function Enable-NuSpecIntelliSense {
+    Process {		
 		$profileDirectory = Split-Path $profile -parent
 		$profileModulesDirectory = (Join-Path $profileDirectory "Modules")
 		$moduleDir = (Join-Path $profileModulesDirectory "NuSpec")
-		$solutionDir = Get-SolutionDir
-		$nugetFolder = Join-Path $solutionDir .nuget
-		
-		if(!(Test-Path $nugetFolder)) {
-			Write-Error "The '$nugetFolder' doesn't exist. Please enable package restore before using this feature."
-		}
-		else {
-			# Copy NuGet.Extensions.targets to $(SolutionDir)\.nuget folder
-			$nugetExtensionsSrcPath = Join-Path $moduleDir NuGet.Extensions.targets
-			Copy-Item $nugetExtensionsSrcPath $nugetFolder
-			
-			# Copy MSBuildExtensionPack to $(SolutionDir)\.nuget\MSBuildExtensionPack folder
-			$msbuildExtensionPackSrcPath = Join-Path $moduleDir MSBuildExtensionPack
-			$msbuildExtensionTargetPath = Join-Path $nugetFolder MSBuildExtensionPack
-			if(!(Test-Path $nugetFolder)) {
-				New-Item $msbuildExtensionTargetPath -type directory
-			}			
-			Copy-Item $msbuildExtensionPackSrcPath $msbuildExtensionTargetPath -recurse -force
-			
-			# Modify nuget.targets file
-			$nugetTargetsPath = Join-Path $nugetFolder nuget.targets
-			$alreadyRegistered = Select-String -Path $nugetTargetsPath -Pattern "NuGet.Extensions.targets"
-			if(!($alreadyRegistered)){
-				$doc = [xml](Get-Content -Path $nugetTargetsPath)
-				$propertyGroup = $doc.Project.PropertyGroup
-				
-				# Import nuget.extensions.targets
-				$importExtensionsElement = $doc.CreateElement("Import")
-				$importExtensionsElement.SetAttribute("Project", "NuGet.Extensions.targets")
-				$doc.Project.InsertAfter($importExtensionsElement, $propertyGroup) | Out-Null
-				
-				# Add commands to BuildPackage target
-				$buildPackageTarget = $doc.Project.Target | where { $_.Name -eq "BuildPackage" }
-				$buildPackageTarget.SetAttribute("DependsOnTargets", "CheckPrerequisites; SetPackageVersion")
-				
-				$pushCommand = $doc.CreateElement("Exec")
-				$pushCommand.SetAttribute("Command", "`$(PushCommand)")
-				$pushCommand.SetAttribute("LogStandardErrorAsError", "true")
-				$pushCommand.SetAttribute("Condition", "Exists('`$(NuPkgFile)') And `$(PushPackage) == 'true'")
-				$buildPackageTarget.AppendChild($pushCommand) | Out-Null
-				
-				$pushSymbolsCommand = $doc.CreateElement("Exec")
-				$pushSymbolsCommand.SetAttribute("Command", "`$(PushSymbolsCommand)")
-				$pushSymbolsCommand.SetAttribute("LogStandardErrorAsError", "true")
-				$pushSymbolsCommand.SetAttribute("Condition", "Exists('`$(SymbolsPkgFile)') And `$(PushPackage) == 'true'")
-				$buildPackageTarget.AppendChild($pushSymbolsCommand) | Out-Null
-				
-				# Save the changes
-				$doc = [xml]$doc.OuterXml.Replace(" xmlns=`"`"", "")
-				$doc.Save($nugetTargetsPath) | Out-Null
-				
-				# Add the new targets files to the .nuget solution folder
-				$solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
-				$solutionItemsProject = $dte.Solution.Projects | Where-Object { $_.ProjectName -eq ".nuget" }
-				if(!($solutionItemsProject)) {
-					$solutionItemsProject = $solution.AddSolutionFolder(".nuget")
-				}
-				$nugetExtensionsTargetsFile = Join-Path $nugetFolder NuGet.Extensions.targets
-				$alreadyAdded = $solutionItemsProject.ProjectItems | Where-Object { $_.Name -eq $nugetExtensionsTargetsFile }
-                if(!($alreadyAdded)) {
-                    $solutionItemsProject.ProjectItems.AddFromFile($nugetExtensionsTargetsFile) | Out-Null
-                }
-				$solution.SaveAs($solution.FullName) | Out-Null
-			}
-			
-			# Set the PushPackage MSBuild property to true for the target project(s)
-			$projects | %{ 
-				$project = $_
-				Set-MSBuildProperty BuildPackage true $project.Name
-				Set-MSBuildProperty PushPackage true $project.Name
-				Write-Host "Enabled Package Push for project '$($project.Name)'"
-			}
-		}
-	}
+
+        $solutionDir = Get-SolutionDir
+        $solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
+        
+        # Set up solution folder "Solution Items"
+        $solutionItemsProject = $dte.Solution.Projects | Where-Object { $_.ProjectName -eq "Solution Items" }
+        if(!($solutionItemsProject)) {
+            $solutionItemsProject = $solution.AddSolutionFolder("Solution Items")
+        }        
+        
+        # Copy the XSD in the solution directory
+        try {
+            $xsdInstallPath = Join-Path $solutionDir 'nuspec.xsd'
+            $xsdToolsPath = Join-Path $moduleDir 'nuspec.xsd'
+                
+            if(!(Test-Path $xsdInstallPath)) {
+                Copy-Item $xsdToolsPath $xsdInstallPath
+            }
+                
+            $alreadyAdded = $solutionItemsProject.ProjectItems | Where-Object { $_.Name -eq 'nuspec.xsd' }
+            if(!($alreadyAdded)) {
+                $solutionItemsProject.ProjectItems.AddFromFile($xsdInstallPath) | Out-Null
+            }
+        }
+        catch {
+            Write-Warning "Failed to install nuspec.xsd into 'Solution Items'"
+        }
+        $solution.SaveAs($solution.FullName)
+    }
 }
 
 # Statement completion for project names
-'Install-NuSpec', 'Enable-PackagePush' | %{ 
+'Install-NuSpec', 'Enable-NuSpecIntelliSense' | %{ 
     Register-TabExpansion $_ @{
         ProjectName = { Get-Project -All | Select -ExpandProperty Name }
     }
 }
 
-Export-ModuleMember Install-NuSpec, Enable-PackagePush
+Export-ModuleMember Install-NuSpec, Enable-NuSpecIntelliSense

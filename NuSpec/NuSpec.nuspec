@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>NuSpec</id>
-    <version>2.1.0</version>
+    <version>3.0.0</version>
     <authors>Xavier Decoster</authors>
     <owners>MyGet</owners>
     <licenseUrl>https://github.com/myget/NuGetPackages/blob/master/license.txt</licenseUrl>
     <projectUrl>https://github.com/myget/NuGetPackages</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Powershell cmdlet that makes working with NuSpec files easier!</description>
-    <releaseNotes>Added support for specifying a custom nuspec template path when using the Install-NuSpec function.</releaseNotes>
+    <releaseNotes>Support for NuGet v2.7 Package Restore</releaseNotes>
   </metadata>
 </package>

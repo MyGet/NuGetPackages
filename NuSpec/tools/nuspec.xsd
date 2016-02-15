@@ -1,107 +1,408 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="nuspec"
-    targetNamespace="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"
-    elementFormDefault="qualified"
-    xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"
-    xmlns:mstns="{0}"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="unqualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           version="3.3"
 >
-    <xs:complexType name="dependency">
-        <xs:attribute name="id" type="xs:string" use="required" />
-        <xs:attribute name="version" type="xs:string" use="optional" />
-    </xs:complexType>
-
-    <xs:complexType name="dependencyGroup">
-        <xs:sequence>
-            <xs:element name="dependency" minOccurs="0" maxOccurs="unbounded" type="dependency">
-            </xs:element>
-        </xs:sequence>
-        <xs:attribute name="targetFramework" type="xs:string" use="optional" />
-    </xs:complexType>
-
-    <xs:complexType name="reference">
-        <xs:attribute name="file" type="xs:string" use="required" />
-    </xs:complexType>
-
-    <xs:complexType name="referenceGroup">
-        <xs:sequence>
-            <xs:element name="reference" minOccurs="1" maxOccurs="unbounded" type="reference">
-            </xs:element>
-        </xs:sequence>
-        <xs:attribute name="targetFramework" type="xs:string" use="optional" />
-    </xs:complexType>
-    
-    <xs:element name="package">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="metadata" maxOccurs="1" minOccurs="1">
-                    <xs:complexType>
-                        <xs:all>
-                            <xs:element name="id" maxOccurs="1" minOccurs="1" type="xs:string" />
-                            <xs:element name="version" maxOccurs="1" minOccurs="1" type="xs:string" />
-                            <xs:element name="title" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="authors" maxOccurs="1" minOccurs="1" type="xs:string" />
-                            <xs:element name="owners" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="licenseUrl" maxOccurs="1" minOccurs="0" type="xs:anyURI" />
-                            <xs:element name="projectUrl" maxOccurs="1" minOccurs="0" type="xs:anyURI" />
-                            <xs:element name="iconUrl" maxOccurs="1" minOccurs="0" type="xs:anyURI" />
-                            <xs:element name="requireLicenseAcceptance" maxOccurs="1" minOccurs="0" type="xs:boolean" />
-                            <xs:element name="description" maxOccurs="1" minOccurs="1" type="xs:string" />
-                            <xs:element name="summary" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="releaseNotes" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="copyright" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="language" maxOccurs="1" minOccurs="0" type="xs:string" default="en-US" />
-                            <xs:element name="tags" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="dependencies" maxOccurs="1" minOccurs="0">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                            <xs:element name="dependency" type="dependency" />
-                                            <xs:element name="group" type="dependencyGroup" />
-                                        </xs:choice>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="frameworkAssemblies" maxOccurs="1" minOccurs="0">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="frameworkAssembly" minOccurs="0" maxOccurs="unbounded">
-                                            <xs:complexType>
-                                                <xs:attribute name="assemblyName" type="xs:string" use="required" />
-                                                <xs:attribute name="targetFramework" type="xs:string" use="optional" />
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="references" maxOccurs="1" minOccurs="0">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                            <xs:element name="reference" type="reference" />
-                                            <xs:element name="group" type="referenceGroup" />
-                                        </xs:choice>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:all>
-                        <xs:attribute name="minClientVersion" use="optional" type="xs:string" />
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name="files" minOccurs="0" maxOccurs="1" nillable="true">
-                    <xs:complexType>
+  <xs:element name="package">
+    <xs:annotation>
+      <xs:documentation source="http://docs.nuget.org/Create/Nuspec-Reference" xml:lang="en">The root element of a package definition</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="metadata"
+                    maxOccurs="1"
+                    minOccurs="1">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">Information about how the package should behave when installed</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="id"
+                          maxOccurs="1"
+                          minOccurs="1"
+                          type="requiredString_type">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">REQUIRED - Unique identifier for the package</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="version"
+                          maxOccurs="1"
+                          minOccurs="1"
+                          type="version_type">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">REQUIRED - Version number of the package</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="title"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Human-friendly name of the package displayed in NuGet clients</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="authors"
+                          maxOccurs="1"
+                          minOccurs="1"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">REQUIRED - Comma-separated list of authors of the package code</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="owners"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Comma-separated list of the owners of the package - ignored by NuGet.org</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="description"
+                          maxOccurs="1"
+                          minOccurs="1"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A long description of the package to show in NuGet clients</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="releaseNotes"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A description of the changes made in each release of the package</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="summary"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A short description of the package to show in NuGet clients</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="language"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string"
+                          default="en-US">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">The locale ID for the package, such as en-US</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="projectUrl"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:anyURI">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A URL to learn more about the package - the package project's home page</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="iconUrl"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:anyURI">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A URL for an image to use in NuGet clients. Should be a 64x64 PNG with a transparent background</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="licenseUrl"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:anyURI">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A URL for a license to the package</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="copyright"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Copyright details for the package</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="requireLicenseAcceptance"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:boolean"
+                          default="false">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Boolean - does the client need to ensure the package license is accepted before it is installed?  Default: false</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="dependencies"
+                          maxOccurs="1"
+                          minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Packages that this package depends upon</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:element name="group"
+                                minOccurs="0"
+                                maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation xml:lang="en">A collection of packages to be installed as a group</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="file" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:attribute name="src" use="required" type="xs:string" />
-                                    <xs:attribute name="target" use="optional" type="xs:string" />
-                                    <xs:attribute name="exclude" use="optional" type="xs:string" />
-                                </xs:complexType>
-                            </xs:element>
+                          <xs:element name="dependency"
+                                      type="dependency_type"
+                                      minOccurs="0"
+                                      maxOccurs="unbounded" />
                         </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
+                        <xs:attribute name="targetFramework"
+                                      use="optional"
+                                      type="xs:string">
+                          <xs:annotation>
+                            <xs:documentation>If the project target framework matches this value, then this group of packages will be installed.  An empty value serves as a fall-back</xs:documentation>
+                          </xs:annotation>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="dependency"
+                                type="dependency_type"
+                                minOccurs="1"
+                                maxOccurs="unbounded" />
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="references"
+                          maxOccurs="1"
+                          minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Names of assemblies (not the path) under the lib folder that are added as project references. Default: all assemblies are added</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="reference"
+                                minOccurs="0"
+                                maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="file"
+                                      type="xs:string"
+                                      use="required">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="en">Name of the file to include</xs:documentation>
+                          </xs:annotation>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="tags"
+                          maxOccurs="1"
+                          minOccurs="0"
+                          type="xs:string">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">A space delimited list of tags and keywords that describe the package for use by NuGet repositories providing search capabilties</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="frameworkAssemblies"
+                          maxOccurs="1"
+                          minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="frameworkAssembly"
+                                minOccurs="0"
+                                maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation xml:lang="en">.NET framework assemblies that this package requires</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="assemblyName"
+                                      type="xs:string"
+                                      use="required">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="en">REQUIRED - A fully qualified assembly name</xs:documentation>
+                          </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="targetFramework"
+                                      type="xs:string"
+                                      use="optional">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="en">Specific target framework this reference applies to. Default: all frameworks</xs:documentation>
+                          </xs:annotation>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+
+                    <xs:element name="contentFiles"
+                                minOccurs="0"
+                                maxOccurs="1">
+                      <xs:annotation>
+                        <xs:documentation xml:lang="en">Directions for how to include files as content in the package</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="files"
+                                      minOccurs="1"
+                                      maxOccurs="unbounded">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="en">Defines a collection of files to be acted on by NuGet</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:attribute name="include"
+                                            use="required"
+                                            type="folder_type">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="en">Location of the files under /contentFiles to act on</xs:documentation>
+                                </xs:annotation>
+                              </xs:attribute>
+                              <xs:attribute name="exclude"
+                                            use="optional"
+                                            type="xs:string">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="en">A path, optionally with wild cards, to exclude matching files from</xs:documentation>
+                                </xs:annotation>
+                              </xs:attribute>
+                              <xs:attribute name="buildAction"
+                                            use="optional"
+                                            default="Compile"
+                                            type="buildAction_type">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="en">The action MSBuild should take on the files</xs:documentation>
+                                </xs:annotation>
+                              </xs:attribute>
+                              <xs:attribute name="copyToOutput"
+                                            use="optional"
+                                            default="false"
+                                            type="xs:boolean">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="en">If true, then copy these files to the output folder</xs:documentation>
+                                </xs:annotation>
+                              </xs:attribute>
+                              <xs:attribute name="flatten"
+                                            use="optional"
+                                            default="false"
+                                            type="xs:boolean">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="en">If files are copied to the output folder, when true the full folder structure is reproduced in output</xs:documentation>
+                                </xs:annotation>
+                              </xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+            <xs:attribute name="minClientVersion" type="xs:decimal" use="optional">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">The minimum NuGet client version needed to install this package.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="files"
+                    minOccurs="0"
+                    maxOccurs="1"
+                    nillable="true">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">If declared, these are the only files to include in the package</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="file"
+                          minOccurs="0"
+                          maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="src"
+                                use="required"
+                                type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation>REQUIRED - The location of the file or files to include relative to the NuSpec file</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="target"
+                                use="optional"
+                                type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">Relative path to the directory within the package where the files will be placed</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+
+                  <xs:attribute name="exclude"
+                                use="optional"
+                                type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">The file or files to exclude within the src location</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="requiredString_type">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="version_type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d+\.\d+\.\d+(.\d+)?-?[a-zA-Z0-9]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="dependency_type">
+    <xs:attribute name="id"
+                  type="xs:string"
+                  use="required">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">The unique identifier of the package to reference</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+      <xs:attribute name="version"
+                    type="version_type"
+                    use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">The version numbers of the package to reference - a range can be specified</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+  </xs:complexType>
+
+  <xs:simpleType name="folder_type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^vb|fs|cs\/[^/]+\/.+"></xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="buildAction_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">No action should be taken by MSBuild</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Compile">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">These files should be compiled</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Content">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">These files should be treated as content</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="EmbeddedResource">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Treat these files an embedded resource</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

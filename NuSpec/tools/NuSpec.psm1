@@ -70,14 +70,14 @@ function Get-MSBuildProperty {
 function Install-NuSpec {
     param(
         [parameter(ValueFromPipelineByPropertyName = $true)]
-        [string[]]$ProjectName,
+        [string[]]$Project,
     	[switch]$EnableIntelliSense,
         [string]$TemplatePath
     )
     
     Process {
     
-        $projects = (Resolve-ProjectName $ProjectName)
+        $projects = (Resolve-ProjectName $Project)
         
         if(!$projects) {
             Write-Error "Unable to locate project. Make sure it isn't unloaded."
@@ -94,12 +94,12 @@ function Install-NuSpec {
         
         # Add NuSpec file for project(s)
         $projects | %{ 
-            $project = $_
+            $nuspecProject = $_
             
             # Set the nuspec target path
-            $projectFile = Get-Item $project.FullName
+            $projectFile = Get-Item $nuspecProject.FullName
             $projectDir = [System.IO.Path]::GetDirectoryName($projectFile)
-            $projectNuspec = "$($project.Name).nuspec"
+            $projectNuspec = "$($nuspecProject.Name).nuspec"
             $projectNuspecPath = Join-Path $projectDir $projectNuspec
             
             # Get the nuspec template source path
@@ -120,15 +120,15 @@ function Install-NuSpec {
             
             try {
                 # Add nuspec file to the project
-                $project.ProjectItems.AddFromFile($projectNuspecPath) | Out-Null
-                $project.Save()
+                $nuspecProject.ProjectItems.AddFromFile($projectNuspecPath) | Out-Null
+                $nuspecProject.Save()
 				
-				Set-MSBuildProperty NuSpecFile $projectNuspec $project.Name
+		Set-MSBuildProperty NuSpecFile $projectNuspec $nuspecProject.Name
                 
-                "Updated '$($project.Name)' to use nuspec '$projectNuspec'"
+                "Updated '$($nuspecProject.Name)' to use nuspec '$projectNuspec'"
             }
             catch {
-                Write-Warning "Failed to install nuspec '$projectNuspec' into '$($project.Name)'"
+                Write-Warning "Failed to install nuspec '$projectNuspec' into '$($nuspecProject.Name)'"
             }
         }
     }
